@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════
+   DESIGN TOKENS
+   (replaces the old tailwind.config.js)
+   ═══════════════════════════════ */
+@theme {
+  --color-forest: #0d2b1f;
+  --color-fdeep: #08180f;
+  --color-fmid: #2a5c3f;
+  --color-flight: #3d7a56;
+  --color-gold: #c9912a;
+  --color-goldlt: #e8b860;
+  --color-stone: #8c7b6b;
+  --color-cream: #f7f4ee;
+  --color-offwhite: #fdfcf9;
+
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ═══════════════════════════════
+   BASE
+   ═══════════════════════════════ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* keep anchored sections clear of the fixed 4rem navbar */
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-offwhite);
+    color: var(--color-forest);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ═══════════════════════════════
+   COMPONENTS
+   ═══════════════════════════════ */
+@layer components {
+  /* ── Nav ── */
+  .nav-blur {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  /* ── Hero ── */
+  .hero-bg {
+    background: linear-gradient(135deg, #0d2b1f 0%, #122e20 60%, #1a4030 100%);
+  }
+
+  .hero-grain {
+    position: relative;
+  }
+  .hero-grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  /* ── Phone mockup ── */
+  .phone-shell {
+    background: linear-gradient(160deg, #1e3a2a, #0a1f12);
+    border-radius: 44px;
+    box-shadow:
+      0 40px 80px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .screen-bg {
+    background: linear-gradient(180deg, #0f2d1c 0%, #0a1f12 100%);
+  }
+
+  /* ── Gold gradient text ── */
+  .gold-text {
+    background: linear-gradient(135deg, #c9912a, #e8b860);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ── Step connector ── */
+  .step-line {
+    position: absolute;
+    left: 23px;
+    top: 48px;
+    bottom: -20px;
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(201, 145, 42, 0.4), transparent);
+  }
+
+  /* ── Feature card ── */
+  .feat-card {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .feat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 48px rgba(13, 43, 31, 0.12);
+  }
+
+  /* ── Stat band ── */
+  .stat-band {
+    background: linear-gradient(135deg, #0d2b1f, #1a4030);
+  }
+
+  /* ── CTA section ── */
+  .cta-bg {
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, #1d4a2f 0%, #0d2b1f 100%);
+  }
+
+  /* ── Gold button ── */
+  .btn-gold {
+    background: linear-gradient(135deg, #c9912a, #b8801f);
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+  .btn-gold:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  /* ── Scroll reveal ──
+     Lives in the utilities layer so Tailwind utilities (e.g. delay-*)
+     can still compose with it. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.55s ease,
+      transform 0.55s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+}
