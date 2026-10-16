@@ -1,168 +1,317 @@
 @import "tailwindcss";
 
-/* ═══════════════════════════════
-   DESIGN TOKENS
-   (replaces the old tailwind.config.js)
-   ═══════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   DESIGN TOKENS — blue theme
+   ═══════════════════════════════════════════════════════════ */
 @theme {
-  --color-forest: #0d2b1f;
-  --color-fdeep: #08180f;
-  --color-fmid: #2a5c3f;
-  --color-flight: #3d7a56;
-  --color-gold: #c9912a;
-  --color-goldlt: #e8b860;
-  --color-stone: #8c7b6b;
-  --color-cream: #f7f4ee;
-  --color-offwhite: #fdfcf9;
+  --color-navy: #020817; /* page background */
+  --color-accent: #5ab0ff; /* nav numbers, badges, CTA, borders, links */
+  --color-accent-hi: #8cc8ff; /* CTA hover */
+  --color-electric: #1d4ed8; /* radial glows, image shadows */
+  --color-electric-2: #2563eb;
 
-  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Legacy aliases kept so older unimported components still resolve. */
+  --color-ink: #020817;
+  --color-panel: #020817;
+  --color-panel-2: #04102a;
+  --color-ice: #5ab0ff;
+  --color-ice-hi: #8cc8ff;
+  --color-cream: #eaf3ff;
+  --color-stone: #8b95a3;
+  --color-gold: #5ab0ff;
+  --color-goldlt: #8cc8ff;
+  --color-forest: #f2f8ff;
+
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* ═══════════════════════════════
-   BASE
-   ═══════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   GLOBAL RESET
+   Every spacing value in the hero is explicit; there are no
+   inherited paragraph margins or UA button padding.
+
+   This MUST live in `@layer base`. Tailwind 4 puts its utilities
+   in `@layer utilities`, and *unlayered CSS always beats layered
+   CSS* regardless of specificity. An unlayered `* { padding: 0 }`
+   would therefore silently override every `px-*` / `py-*` /
+   `ml-auto` utility in the page — the nav would lose its gutter
+   and the CTA its padding. `base` is ordered before `utilities`,
+   so the reset still applies globally but utilities win.
+   ═══════════════════════════════════════════════════════════ */
 @layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
+  * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
   }
 
   html {
-    scroll-behavior: smooth;
-    /* keep anchored sections clear of the fixed 4rem navbar */
-    scroll-padding-top: 5rem;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    background: var(--color-offwhite);
-    color: var(--color-forest);
-    font-family: var(--font-sans);
+    background: #020817;
+    overflow-x: hidden;
+    color: #ffffff;
+    font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-    *,
-    *::before,
-    *::after {
-      transition-duration: 0.01ms !important;
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-    }
+  ::selection {
+    background: #5ab0ff;
+    color: #020817;
+  }
+
+  :focus-visible {
+    outline: 2px solid #5ab0ff;
+    outline-offset: 3px;
   }
 }
 
-/* ═══════════════════════════════
-   COMPONENTS
-   ═══════════════════════════════ */
-@layer components {
-  /* ── Nav ── */
-  .nav-blur {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
+/* ═══════════════════════════════════════════════════════════
+   FONTS
+   Graphik LCG = wordmark + H1 only. Manrope = everything else.
+   ═══════════════════════════════════════════════════════════ */
+.font-graphik {
+  font-family: "Graphik LCG", sans-serif;
+}
 
-  /* ── Hero ── */
-  .hero-bg {
-    background: linear-gradient(135deg, #0d2b1f 0%, #122e20 60%, #1a4030 100%);
-  }
+.font-manrope {
+  font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
 
-  .hero-grain {
-    position: relative;
-  }
-  .hero-grain::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    opacity: 0.4;
-  }
-
-  /* ── Phone mockup ── */
-  .phone-shell {
-    background: linear-gradient(160deg, #1e3a2a, #0a1f12);
-    border-radius: 44px;
-    box-shadow:
-      0 40px 80px rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-  }
-  .screen-bg {
-    background: linear-gradient(180deg, #0f2d1c 0%, #0a1f12 100%);
-  }
-
-  /* ── Gold gradient text ── */
-  .gold-text {
-    background: linear-gradient(135deg, #c9912a, #e8b860);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  /* ── Step connector ── */
-  .step-line {
-    position: absolute;
-    left: 23px;
-    top: 48px;
-    bottom: -20px;
-    width: 1px;
-    background: linear-gradient(to bottom, rgba(201, 145, 42, 0.4), transparent);
-  }
-
-  /* ── Feature card ── */
-  .feat-card {
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-  }
-  .feat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 48px rgba(13, 43, 31, 0.12);
-  }
-
-  /* ── Stat band ── */
-  .stat-band {
-    background: linear-gradient(135deg, #0d2b1f, #1a4030);
-  }
-
-  /* ── CTA section ── */
-  .cta-bg {
-    background: radial-gradient(ellipse 80% 60% at 50% 50%, #1d4a2f 0%, #0d2b1f 100%);
-  }
-
-  /* ── Gold button ── */
-  .btn-gold {
-    background: linear-gradient(135deg, #c9912a, #b8801f);
-    transition:
-      opacity 0.15s ease,
-      transform 0.15s ease;
-  }
-  .btn-gold:hover {
-    opacity: 0.92;
-    transform: translateY(-1px);
-  }
-
-  /* ── Scroll reveal ──
-     Lives in the utilities layer so Tailwind utilities (e.g. delay-*)
-     can still compose with it. */
-  .reveal {
+/* ═══════════════════════════════════════════════════════════
+   ENTRANCE KEYFRAMES
+   Entrance curve: cubic-bezier(0.16, 1, 0.3, 1) (expo-out).
+   Each class starts at opacity 0 and holds with `forwards`.
+   Stagger with an inline animationDelay.
+   ═══════════════════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from {
     opacity: 0;
     transform: translateY(18px);
-    transition:
-      opacity 0.55s ease,
-      transform 0.55s ease;
   }
-  .reveal.visible {
+  to {
     opacity: 1;
-    transform: none;
+    transform: translateY(0);
+  }
+}
+
+.anim-fade-up {
+  opacity: 0;
+  animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.anim-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.anim-slide-left {
+  opacity: 0;
+  animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.anim-slide-right {
+  opacity: 0;
+  animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.anim-scale-in {
+  opacity: 0;
+  animation: scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes gridReveal {
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+.anim-grid-v {
+  transform-origin: top;
+  opacity: 0;
+  animation: gridReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes gridRevealH {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.anim-grid-h {
+  transform-origin: left;
+  opacity: 0;
+  animation: gridRevealH 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FLOATING MONEY
+   Two counter-phased loops so the drift never looks uniform.
+
+   The entrance animation lives on a wrapper and the continuous
+   float on the <img>, so the two never fight over `transform`.
+   ═══════════════════════════════════════════════════════════ */
+@keyframes floatA {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--r0));
+  }
+  50% {
+    transform: translate3d(var(--dx), var(--dy), 0) rotate(var(--r1));
+  }
+}
+
+@keyframes floatB {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--r1)) scale(1);
+  }
+  50% {
+    transform: translate3d(calc(var(--dx) * -1), calc(var(--dy) * -1), 0) rotate(var(--r0)) scale(1.06);
+  }
+}
+
+.money-float {
+  position: absolute;
+  will-change: transform;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 20px 40px rgba(37, 99, 235, 0.45));
+}
+
+.money-float.a {
+  animation: floatA var(--dur) ease-in-out infinite;
+}
+
+.money-float.b {
+  animation: floatB var(--dur) ease-in-out infinite;
+}
+
+/* Parallax offset written by the rAF loop (desktop only). */
+.money-parallax {
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLL REVEAL (Section Two)
+   Elements start hidden; a single IntersectionObserver adds
+   `.is-visible` to the section root, and the whole column plays
+   the same fadeUp entrance, staggered via --reveal-delay.
+   ═══════════════════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+}
+
+.is-visible .reveal {
+  animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION TWO — idle floaters
+   float-slow reuses the floatA keyframes without the absolute
+   positioning / drop-shadow that `.money-float` carries.
+   ═══════════════════════════════════════════════════════════ */
+.float-slow {
+  animation: floatA var(--dur, 9s) ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes phoneFloat {
+  0%,
+  100% {
+    transform: translateY(-10px);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.phone-float {
+  animation: phoneFloat 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .money-float,
+  .float-slow,
+  .phone-float {
+    animation: none !important;
+  }
+
+  /* Never let a reveal stay hidden when motion is switched off. */
+  .reveal {
+    opacity: 1 !important;
+  }
+
+  .is-visible .reveal {
+    animation: none !important;
+  }
+
+  /* Land every entrance immediately instead of waiting out its stagger. */
+  .anim-fade-up,
+  .anim-fade-in,
+  .anim-slide-left,
+  .anim-slide-right,
+  .anim-scale-in,
+  .anim-grid-v,
+  .anim-grid-h {
+    animation-delay: 0ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
