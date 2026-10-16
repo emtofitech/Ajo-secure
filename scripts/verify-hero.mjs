@@ -62,6 +62,7 @@ try {
   check("wordmark AjoSecure", hero.includes(">AjoSecure</span>"));
   check("Get Started button", hero.includes(">Get Started</a>"));
   check("Get Started square + accent", /bg-\[#5AB0FF\][^"]*px-\[16px\] md:px-\[20px\] py-\[10px\]/.test(hero));
+  check("nav pinned to viewport on scroll", hero.includes("site-nav fixed top-0 left-0 w-full z-50") && hero.includes('href="#how-it-works"'));
   check("nav has no numbered links", !hero.includes("01.") && !hero.includes("xl:gap-[40px]"));
 
   /* ── HERO: money ── */
@@ -85,36 +86,48 @@ try {
   /* ── SECTION TWO ── */
   console.log("\n=== section two ===");
   check("section id=how-it-works", /<section[^>]*id="how-it-works"/.test(two));
-  check("min-h-screen + overflow-hidden", two.includes("min-h-screen") && two.includes("overflow-hidden"));
-  check("inner grid max-w-[1280px]", two.includes("max-w-[1280px]") && two.includes("grid-cols-1 lg:grid-cols-2"));
-  check("gutter px-5 md:px-[35px]", two.includes("px-5 md:px-[35px] py-[80px] md:py-[120px]"));
+  check("min-h-screen + overflow-hidden + seam", two.includes("min-h-screen") && two.includes("overflow-hidden") && two.includes("border-t border-white/10"));
+  check("inner grid 5fr/6fr, max-w-[1280px]", two.includes("max-w-[1280px]") && two.includes("lg:grid-cols-[5fr_6fr]"));
+  check("no top padding after hero (pt-0)", two.includes("px-5 md:px-[35px] pt-0 pb-[80px] md:pb-[120px]"));
   check("grid-line motif present", count(two, /bg-white\/\[0\.05\]/g) === 6);
-  check("phone frame", two.includes("w-[260px] sm:w-[300px]") && two.includes("h-[520px] sm:h-[600px]") && two.includes("rounded-[40px]") && two.includes("bg-[#050f24]"));
+  check("phone frame", two.includes("w-[280px] sm:w-[300px] h-[600px]") && two.includes("rounded-[40px]") && two.includes("border-white/25") && two.includes("bg-[#050f24]"));
+  check("phone is role=img w/ aria-label", /role="img"[^>]*aria-label="Ajo Secure app preview/.test(two));
   check("phone notch", two.includes("w-[90px] h-[22px] rounded-full bg-black"));
-  check("phone screen gradient", two.includes("inset-[12px] rounded-[30px]") && two.includes("linear-gradient(150deg, #0b2a66"));
-  check("phone copy", two.includes("Save Together. Get Paid <span") && two.includes("Securely."));
-  check("phone float loop class", two.includes("phone-float"));
-  check("vault image w/ alt", /<img[^>]*alt="A vault[^"]*"/.test(two) && /src="[^"]*vault[^"]*"/.test(two) && two.includes("max-w-[420px]"));
-  check("vault float + drop-shadow", two.includes("float-slow") && two.includes("drop-shadow-[0_20px_50px_rgba(37,99,235,0.45)]"));
-  check("three feature titles", two.includes("[ CONTRIBUTE ]") && two.includes("[ LEDGER ]") && two.includes("[ PAYOUT ]"));
-  check("feature left border x3", count(two, /border-l border-\[#5AB0FF\]\/40 pl-\[16px\]/g) === 3);
-  check("CTA id + copy", /id="get-started"/.test(two) && two.includes("START AN AJO GROUP"));
-  check("CTA square + padding", two.includes("px-[20px] py-[12px] inline-flex items-center gap-[10px]"));
-  check("CTA glyph", two.includes("&#10022;") || two.includes("\u2726"));
-  check("badge copy", two.includes("NOT A WALLET — A SECURE LEDGER"));
-  check("chamfer svg polygon", two.includes('points="0.5,0.5 279.5,0.5 279.5,167.5 30,167.5 0.5,137.5"') && two.includes('stroke="#5AB0FF"'));
-  check("card paragraph copy", two.includes("Organizers coordinate the group") && two.includes("0.6% in fees"));
-  check("fee link", two.includes(">VIEW_FEE_BREAKDOWN</a>"));
+  check("phone screen gradient + padding", two.includes("inset-[12px] rounded-[30px]") && two.includes("from-[#0b2a66] via-[#0a1d4a] to-[#020817]") && two.includes("pt-[44px] pb-[20px]"));
+  check("phone headline forced onto 2 lines", count(two, /block whitespace-nowrap/g) === 2 && two.includes("Save Together.") && two.includes("Get Paid "));
+  check("group card", two.includes("Lagos Traders") && two.includes("CYCLE 4 / 20") && two.includes("17 of 20 members paid"));
+  check("count-up target + initial value", /data-countup="1000000"/.test(two) && two.includes("₦1,000,000"));
+  check("progress bar fill", two.includes("bar-fill") && two.includes("--fill:0.85"));
+  check("recipient row", two.includes("Adaeze O.") && two.includes("KYC verified") && two.includes(">AO<"));
+  check("phone fee lines", two.includes("Organizer fee 0.5%") && two.includes("−₦5,000") && two.includes("Platform fee 0.1%") && two.includes("Recipient receives") && two.includes("₦994,000"));
+  check("status pill + pulsing dot", two.includes("pulse-dot") && two.includes("FUNDING · 3 pending"));
+  check("two floating toasts", count(two, /hidden sm:flex float-y/g) === 2 && two.includes("Ada paid ₦50,000") && two.includes("Payout locked to verified account"));
+  check("eyebrow + h2", two.includes("HOW_IT_WORKS") && !two.includes("[ HOW_IT_WORKS ]") && two.includes("Ajo that runs on rules,") && two.includes("not on trust."));
+  check("h2 subcopy", two.includes("Members contribute on schedule"));
+  check("vault alt + float + shadow", /<img[^>]*alt="Blue steel vault"/.test(two) && two.includes("float-y drop-shadow-[0_20px_50px_rgba(37,99,235,0.5)]"));
+  check("vault clip fallback", two.includes("inset(0 0 6% 0)"));
+  check("vault floor glow", two.includes("bottom-[-6px] w-[70%] h-[14px] bg-[#2563EB]/40"));
+  check("three step squares", count(two, /border border-\[#5AB0FF\]\/60/g) === 3);
+  check("step numbers + titles", two.includes(">01.<") && two.includes(">02.<") && two.includes(">03.<") && two.includes(">CONTRIBUTE<") && two.includes(">LEDGER<") && two.includes(">PAYOUT<"));
+  check("step titles are unbracketed", !/\[ (CONTRIBUTE|LEDGER|PAYOUT) \]/.test(two));
+  check("vault sits after the subcopy, before the steps", two.indexOf("Members contribute on schedule") < two.indexOf('alt="Blue steel vault"') && two.indexOf('alt="Blue steel vault"') < two.indexOf(">01.<"));
+  check("columns are top-aligned with the phone", two.includes("lg:grid-cols-[5fr_6fr] gap-[56px] lg:gap-[72px] items-start"));
+  check("no CTA row / trust items / fee card", ["START AN AJO GROUP", "Regulated payments", "Verified payouts", "Full audit trail", "NOT A WALLET", "VIEW_FEE_BREAKDOWN", "20 members × ₦50,000", "Organizer fee (0.5%)", "0.6% in fees", "Example for illustration."].every((s) => !two.includes(s)));
+  check("step secondary lines", ["Reminders arrive by in-app, SMS and WhatsApp.", "Settled entries never change. Corrections are new, visible entries.", "Releases only when the cycle is fully funded and the recipient is verified."].every((s) => two.includes(s)));
+  check("step connector lines", count(two, /anim-grid-v/g) === 2);
+  check("step row hover", count(two, /hover:translate-x-\[4px\]/g) === 3);
+  check("no chamfered fee card (polygon)", !two.includes("polygon(0 0,100% 0,100% 100%,30px 100%,0 calc(100% - 30px))"));
 
   console.log("\n=== section two: reveal ===");
-  check("7 reveal targets", count(two, /class="reveal/g) === 7);
-  check("staggered --reveal-delay", count(two, /--reveal-delay/g) === 7);
-  check("delays step by 100ms", ["0ms", "100ms", "200ms", "300ms", "400ms", "500ms", "600ms"].every((d) => two.includes(`--reveal-delay:${d}`)));
+  check("4 reveal blocks", count(two, /class="reveal/g) === 4);
+  check("stagger is inline animation-delay, 120ms steps", ["0ms", "120ms", "240ms", "360ms"].every((d) => two.includes(`animation-delay:${d}`)));
+  check("reveal unchanged to --reveal-delay removal", count(two, /--reveal-delay/g) === 0);
 
   /* ── APP ── */
   console.log("\n=== app ===");
   check("app renders two sections", count(app, /<section\b/g) === 2);
   check("app renders hero + section two", app.includes("Save Together") && app.includes('id="how-it-works"'));
+  check("app renders the footer", /<footer\b/.test(app) && app.includes("All rights reserved") && app.includes(">How it works</a>"));
 
   /* ── CSS cascade guard ── */
   console.log("\n=== css cascade ===");
@@ -124,12 +137,15 @@ try {
   check("reset lives inside @layer base", baseAt !== -1 && resetAt !== -1 && baseAt < resetAt);
   check("body keeps overflow-x hidden", css.includes("overflow-x: hidden"));
   check("body does NOT set overflow: hidden", !/body\s*{[^}]*[^-]overflow:\s*hidden/.test(css));
-  check("float-slow reuses floatA", /\.float-slow\s*{[^}]*floatA/.test(css));
+  check("float-y keyframes + class", /@keyframes floatY/.test(css) && /\.float-y\s*{[^}]*floatY/.test(css));
+  check("pulse-dot + bar-fill defined", /\.pulse-dot\s*{/.test(css) && /\.bar-fill\s*{/.test(css) && /\.is-visible \.bar-fill\s*{/.test(css));
   check("reveal hidden until is-visible", /\.reveal\s*{\s*opacity:\s*0/.test(css) && /\.is-visible \.reveal\s*{/.test(css));
+  check("old phone-float / float-slow removed", !css.includes("phone-float") && !css.includes("float-slow"));
+  check("site-nav pinned + scrolled bar", /\.site-nav\s*{[^}]*border-bottom/.test(css) && /\.site-nav\.is-scrolled\s*{[^}]*rgba\(2, 8, 23, 0\.85\)/.test(css));
   const rm = css.slice(css.indexOf("@media (prefers-reduced-motion"));
   check(
-    "reduced-motion covers reveal + floaters",
-    rm.includes(".money-float") && rm.includes(".reveal") && rm.includes(".float-slow") && rm.includes(".phone-float"),
+    "reduced-motion covers reveal + floaters + bar + nav",
+    rm.includes(".money-float") && rm.includes(".reveal") && rm.includes(".float-y") && rm.includes(".pulse-dot") && rm.includes(".bar-fill") && rm.includes(".site-nav"),
   );
 } finally {
   await server.close();

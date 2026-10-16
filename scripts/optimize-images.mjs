@@ -10,7 +10,9 @@
  *                  art is cropped to its largest connected shape (the
  *                  emblem) — the wordmark baked into the PNG would be an
  *                  illegible smudge at nav size.
- *   - vault.png    opaque white background flood-filled away.
+ *   - vault.png    opaque white background flood-filled away. Uses a lower
+ *                  white threshold so the soft grey contact shadow under the
+ *                  vault is punched out too (it left a white smudge at 230).
  *
  *   npm run optimize:images
  */
@@ -26,7 +28,9 @@ const OUT = join(HERE, "..", "src", "assets");
 /** Longest output edge per asset, in CSS px. */
 const PLAN = {
   "logo.png": { max: 256, cutout: true, cropLargest: true },
-  "vault.png": { max: 900, cutout: true, cropLargest: false },
+  /* 200 (not 230): the vault's grey contact shadow sits around 200-225 and
+     otherwise survives the cut-out as a pale smudge under the feet. */
+  "vault.png": { max: 900, cutout: true, cropLargest: false, white: 200 },
 };
 const DEFAULT_PLAN = { max: 1280, cutout: false, cropLargest: false };
 
@@ -36,8 +40,8 @@ const WHITE = 230;
 const OPAQUE = 128;
 
 /** Flood-fill near-white from the border and punch it to alpha 0. */
-function cutOutWhite(data, w, h, c) {
-  const white = (p) => data[p * c] > WHITE && data[p * c + 1] > WHITE && data[p * c + 2] > WHITE;
+function cutOutWhite(data, w, h, c, thresh = WHITE) {
+  const white = (p) => data[p * c] > thresh && data[p * c + 1] > thresh && data[p * c + 2] > thresh;
   const bg = new Uint8Array(w * h);
   const stack = [];
   const seed = (x, y) => {
@@ -140,7 +144,7 @@ for (const file of files) {
   if (plan.cutout) {
     const { data, info } = await sharp(input).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     const { width: w, height: h, channels: c } = info;
-    const removed = cutOutWhite(data, w, h, c);
+    const removed = cutOutWhite(data, w, h, c, plan.white ?? WHITE);
     note += ` cutout:${Math.round((removed / (w * h)) * 100)}%`;
 
     let src = sharp(data, { raw: { width: w, height: h, channels: c } });

@@ -249,9 +249,10 @@
 
 /* ═══════════════════════════════════════════════════════════
    SCROLL REVEAL (Section Two)
-   Elements start hidden; a single IntersectionObserver adds
-   `.is-visible` to the section root, and the whole column plays
-   the same fadeUp entrance, staggered via --reveal-delay.
+   Elements start hidden; one IntersectionObserver adds
+   `.is-visible` to the section root and CSS plays the staggered
+   fadeUp. The stagger comes from an inline `animation-delay`
+   (120ms steps) on each `.reveal` block.
    ═══════════════════════════════════════════════════════════ */
 .reveal {
   opacity: 0;
@@ -259,47 +260,100 @@
 
 .is-visible .reveal {
   animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: var(--reveal-delay, 0ms);
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SECTION TWO — idle floaters
-   float-slow reuses the floatA keyframes without the absolute
-   positioning / drop-shadow that `.money-float` carries.
+   SECTION TWO — idle float, progress bar, status dot
+   `.float-y` drives the phone, the toasts and the vault.
    ═══════════════════════════════════════════════════════════ */
-.float-slow {
-  animation: floatA var(--dur, 9s) ease-in-out infinite;
-  will-change: transform;
-}
-
-@keyframes phoneFloat {
+@keyframes floatY {
   0%,
   100% {
-    transform: translateY(-10px);
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(10px);
+    transform: translateY(-8px);
   }
 }
 
-.phone-float {
-  animation: phoneFloat 7s ease-in-out infinite;
+.float-y {
+  animation: floatY 7s ease-in-out infinite;
   will-change: transform;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.6);
+  }
+}
+
+.pulse-dot {
+  animation: pulseDot 1.6s ease-in-out infinite;
+}
+
+@keyframes fillBar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(var(--fill, 0.85));
+  }
+}
+
+.bar-fill {
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+.is-visible .bar-fill {
+  animation: fillBar 1.4s cubic-bezier(0.16, 1, 0.3, 1) 600ms forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NAVBAR — pinned to the viewport
+   Transparent over the hero; a blurred navy bar once scrolled.
+   ═══════════════════════════════════════════════════════════ */
+.site-nav {
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 0.3s cubic-bezier(0.76, 0, 0.24, 1),
+    border-color 0.3s cubic-bezier(0.76, 0, 0.24, 1),
+    backdrop-filter 0.3s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.site-nav.is-scrolled {
+  background-color: rgba(2, 8, 23, 0.85);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .money-float,
-  .float-slow,
-  .phone-float {
+  .float-y,
+  .pulse-dot {
     animation: none !important;
   }
 
   /* Never let a reveal stay hidden when motion is switched off. */
   .reveal {
     opacity: 1 !important;
+    animation: none !important;
   }
 
   .is-visible .reveal {
+    animation: none !important;
+  }
+
+  /* Show the progress bar at its final width, no sweep. */
+  .bar-fill {
+    transform: scaleX(var(--fill, 0.85)) !important;
     animation: none !important;
   }
 
@@ -313,5 +367,10 @@
   .anim-grid-h {
     animation-delay: 0ms !important;
     animation-duration: 0.01ms !important;
+  }
+
+  /* The scrolled bar still appears, it just snaps instead of fading. */
+  .site-nav {
+    transition: none !important;
   }
 }

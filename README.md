@@ -23,11 +23,11 @@ Deep navy-black with a single electric-blue accent. No other hues.
 | Accent hover     | `#8CC8FF`                  | Button hover                            |
 | Electric glow    | `#1D4ED8`, `#2563EB`       | Radial glows, image drop-shadows        |
 | Primary text     | `#FFFFFF`                  |                                         |
-| Muted text       | `text-white/50`            | Feature descriptions                    |
+| Muted text       | `text-white/60`, `text-white/50` | Subcopy, step secondary lines      |
 | Grid line        | `bg-white/[0.05]`          | Hero + section-two grid motif           |
 | Plus mark        | `bg-white/70`              | Hero intersections                      |
-| Feature border   | `border-[#5AB0FF]/40`      | Left rule on each feature block         |
-| Phone frame      | `border-white/30` on `#050f24` | Section-two phone mockup            |
+| Step rule        | `border-[#5AB0FF]/60`      | Border on each step square              |
+| Phone frame      | `border-white/25` on `#050f24` | Section-two phone mockup            |
 
 In Tailwind 4 these live as `@theme` custom properties in
 `src/styles/index.css` (`--color-navy`, `--color-accent`, `--color-electric`, …).
@@ -61,7 +61,7 @@ and up**.
 | ---------- | ---------------------------------------------- |
 | Hero nav   | `px-5 md:px-[35px]` (plus `py-5 md:py-[27px]`) |
 | H1         | `left-5 md:left-[35px]`                        |
-| Section 2  | `px-5 md:px-[35px]` (inner `max-w-[1280px]`)   |
+| Section 2  | `px-5 md:px-[35px]` (inner `max-w-[1280px]`, `pt-0`) |
 
 The spec calls for these Tailwind arbitrary values inline rather than a shared
 `.gutter` class, so the value is repeated. **If you change one, change them all**
@@ -90,16 +90,22 @@ Everything else that used to live here — the `CentralNodes` diagram, the
 `[ CONTRIBUTE ] / [ LEDGER ] / [ PAYOUT ]` labels, the six `ConnectorLine` SVGs,
 and the whole bottom row (`START AN AJO GROUP` CTA, `NOT A WALLET — A SECURE
 LEDGER` badge, chamfered info card, `VIEW_FEE_BREAKDOWN` link) — has been removed
-from the hero. The info card, the three feature blocks and the CTA now live in
-section two.
+from the hero, and the CTA + fee-card copy is now gone from the page entirely. The
+three steps live in section two.
 
 The hero keeps: the navbar, the `<h1>` `Save Together. Get Paid Securely.`, the
 blue glow background, the grid lines and plus marks, and the floating money.
 
 ### Navbar
 
-`absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5
-md:px-[35px] py-5 md:py-[27px]`.
+`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-5
+md:px-[35px] py-5 md:py-[27px]` (`.site-nav`).
+
+The bar is **pinned to the viewport**: it stays put while the page scrolls rather
+than riding off with the hero. A passive `scroll` listener (ref + class toggle,
+no state) adds `.is-scrolled` past 8px, fading in a blurred navy bar
+(`rgba(2,8,23,0.85)` + `backdrop-filter: blur(12px)`) with a hairline bottom
+border. Over the hero it is transparent.
 
 - **Left** — a link to `#` holding the logo mark (`h-[28px] md:h-[32px] w-auto`)
   and the wordmark **`AjoSecure`** (`font-graphik text-white text-[18px]
@@ -107,7 +113,7 @@ md:px-[35px] py-5 md:py-[27px]`.
   at 200ms.
 - **Right** — a **Get Started** button (`bg-[#5AB0FF] hover:bg-[#8CC8FF]
   text-black`, square corners, `anim-slide-right` at 500ms) linking to
-  `#get-started`. Shown at **every** breakpoint.
+  `#how-it-works`. Shown at **every** breakpoint.
 
 There are **no numbered nav links** (`01. HOW_IT_WORKS` … `04. AJO_STAR`), **no
 wallet strip** (`GROUP:`, `[ VERIFIED ]`, `STATUS:`, `AJO_STAR ★ 4.8`), **no
@@ -181,45 +187,56 @@ Other notes:
 ## 2 · Section two — how it works
 
 `<section id="how-it-works" class="relative w-full min-h-screen bg-[#020817]
-overflow-hidden">`, with a faint blue radial glow and the same
-`bg-white/[0.05]` grid-line motif as the hero. Inner wrapper:
-`max-w-[1280px] mx-auto px-5 md:px-[35px] py-[80px] md:py-[120px] grid
-grid-cols-1 lg:grid-cols-2 gap-[48px] lg:gap-[64px] items-center`.
+overflow-hidden border-t border-white/10">` — the `border-t` is the seam with the
+hero and the section carries **no top padding**, so it meets the hero exactly.
+Inside: a glow layer (radial blue behind the phone at 25%/50% and behind the
+vault at 85%/15%) and the same `bg-white/[0.05]` grid-line motif as the hero.
+Inner wrapper: `max-w-[1280px] mx-auto px-5 md:px-[35px] pt-0 pb-[80px]
+md:pb-[120px] grid grid-cols-1 lg:grid-cols-[5fr_6fr] gap-[56px] lg:gap-[72px]
+items-start` — `items-start` keeps the right column top-aligned with the phone.
 
 ### Left column — CSS-only phone
 
-A pure-CSS phone frame (no image): `w-[260px] sm:w-[300px] h-[520px]
-sm:h-[600px] rounded-[40px] border border-white/30 bg-[#050f24]` with a
+A pure-CSS phone frame (no image): `w-[280px] sm:w-[300px] h-[600px]
+rounded-[40px] border border-white/25 bg-[#050f24]` with a
 `shadow-[0_30px_80px_rgba(37,99,235,0.35)]`, a centred black notch
-(`w-[90px] h-[22px] rounded-full`), and an inset screen
-(`inset-[12px] rounded-[30px] p-[24px]`) over a blue gradient
-(`#0b2a66 → #0a1d4a → #020817`). The screen repeats the headline with
-"Securely." in accent blue. A soft blue glow sits behind the phone, and the
-whole frame drifts ±10px on a 7s loop (`.phone-float`). On mobile it stacks
-first, centred; at `lg` it sits on the left.
+(`w-[90px] h-[22px] rounded-full`), and an inset screen (`inset-[12px]
+rounded-[30px] pt-[44px] pb-[20px]`) over a blue gradient
+(`#0b2a66 → #0a1d4a → #020817`). The frame is `role="img"` with a descriptive
+`aria-label` and drifts ±8px on a 7s loop (`.float-y`). Inside the screen: a
+two-line headline (each line `whitespace-nowrap` so "Get Paid Securely." can
+never orphan), a "Lagos Traders" group card carrying the ₦ count-up and a
+progress bar, a verified-recipient row, the fee lines, and a status pill pinned
+to the bottom. Two glass toasts (`hidden sm:flex`) overlap the frame, and a large
+blurred blue circle sits behind it.
 
-### Right column — vault, features, CTA, card
+### Right column — header, vault, steps
 
-A `flex flex-col gap-[28px]` stack:
+A `flex flex-col gap-[32px]` stack, **top-aligned with the phone**:
 
-1. **Vault image** — `w-full max-w-[420px] h-auto` with a blue drop-shadow and a
-   slow float (`.float-slow`).
-2. **Three feature blocks** — `[ CONTRIBUTE ]`, `[ LEDGER ]`, `[ PAYOUT ]`, each
-   with `border-l border-[#5AB0FF]/40 pl-[16px]`, a white 13px title and a
-   `text-white/50` description.
-3. **CTA** — `id="get-started"`, `bg-[#5AB0FF] hover:bg-[#8CC8FF] px-[20px]
-   py-[12px] inline-flex items-center gap-[10px]`, square corners, `✦` + `START
-   AN AJO GROUP`. This is the target of the nav's Get Started button.
-4. **Info card** — the `NOT A WALLET — A SECURE LEDGER` badge over the chamfered
-   SVG-border card (viewBox `0 0 280 168`, `preserveAspectRatio="none"`,
-   `max-w-[360px]`), the pooled-funds paragraph, and the `VIEW_FEE_BREAKDOWN` link.
+1. **Header** — a plain `HOW_IT_WORKS` eyebrow (no bracket decoration), the
+   `<h2>` "Ajo that runs on rules, not on trust." and the subcopy paragraph.
+2. **Vault** — the blue steel vault sits **directly under the subcopy**
+   (`w-[140px] sm:w-[180px] md:w-[220px]`, `.float-y` drift, `inset(0 0 6% 0)`
+   clip kept as a no-op safety net) over a soft elliptical floor glow.
+3. **Steps timeline** — three rows of a 44px **square** icon badge
+   (`border-[#5AB0FF]/60`, → `#5AB0FF` + `bg-[#5AB0FF]/10` on hover) joined by 1px
+   gradient connector lines, each with `01./02./03.` + `CONTRIBUTE / LEDGER /
+   PAYOUT`, a description and a secondary line. The whole row shifts 4px
+   right on hover.
+
+The CTA row (`START AN AJO GROUP` + trust items) and the chamfered fee card
+(`NOT A WALLET — A SECURE LEDGER`) are **gone** — there is no fee breakdown on the
+page, so the phone screen's fee lines are the only place fees appear.
 
 ### Scroll reveal
 
-One `IntersectionObserver` on the section root adds `.is-visible`; the CSS then
-plays the same `fadeUp` keyframes on every `.reveal` descendant, staggered via
-`--reveal-delay` (0 → 600ms in 100ms steps: phone, vault, three features, CTA,
-card). **No component state is involved** — a ref plus a class toggle. If
+One `IntersectionObserver` on the section root (threshold `0.2`) adds
+`.is-visible`; the CSS then plays `fadeUp` on every `.reveal` descendant, and the
+stagger comes from an **inline `animation-delay`** (0 → 360ms in 120ms steps:
+phone, header, vault, steps). The same observer runs a 1200ms ease-out ₦
+count-up (`data-countup`, `requestAnimationFrame`, `toLocaleString("en-NG")`).
+**No component state is involved** — a ref plus a class toggle. If
 `IntersectionObserver` is missing the class is added immediately so nothing can
 stay hidden.
 
@@ -234,7 +251,7 @@ in `src/assets/` — **0.52 MB, a 98% reduction**:
 | `money-box`  | 3000×3000 · 6.3 MB | 1280×1280 · 251 KB | alpha preserved                |
 | `money-diff` | 3840×2160 · 6.5 MB | 1280×720 · 118 KB  | alpha preserved                |
 | `money-pile` | 3848×2160 · 9.1 MB | 1280×719 · 145 KB  | alpha preserved                |
-| `vault`      | 1254×1254 · 1.3 MB | 900×900 · 20 KB    | white background cut out       |
+| `vault`      | 1254×1254 · 1.3 MB | 900×900 · 19 KB    | white + grey shadow cut out    |
 | `logo`       | 1254×1254 · 1.0 MB | 253×256 · 13 KB    | white cut out, cropped to crest |
 
 > `logo.png` is a **stacked lockup** (crest over a wordmark). At the nav's 32px
@@ -242,7 +259,9 @@ in `src/assets/` — **0.52 MB, a 98% reduction**:
 > `AjoSecure` text, so the optimizer crops to the largest connected shape — the
 > crest. `logo.png` and `vault.png` have **no alpha**; the optimizer flood-fills
 > their near-white background to transparent from the borders inward (interior
-> whites are kept).
+> whites are kept). The vault uses a **lower white threshold (200, not 230)**
+> because its grey contact shadow sits around 200–225 and otherwise survived the
+> cut-out as a pale smudge under the feet.
 
 To regenerate after swapping artwork in `src/images/`:
 
@@ -271,12 +290,14 @@ Requires Node 18+ (developed on Node 22).
 
 ### `npm run verify`
 
-`scripts/verify-hero.mjs` renders `Hero.jsx`, `SectionTwo.jsx` and `App.jsx`
-through Vite's SSR pipeline and asserts the DOM contract — element counts, the 8
-money instances and their CSS variables, the 8 plus marks, the removed
-hero elements staying removed, the nav's logo/wordmark/Get Started, the section
-two phone/features/CTA/card, the 7 reveal targets and their stagger, the
-`@layer base` cascade fix, and the reduced-motion coverage (**66 assertions**).
+`scripts/verify-hero.mjs` renders `Hero.jsx`, `SectionTwo.jsx`, `Footer.jsx` and
+`App.jsx` through Vite's SSR pipeline and asserts the DOM contract — element
+counts, the 8 money instances and their CSS variables, the 8 plus marks, the
+removed hero elements staying removed, the pinned nav's logo/wordmark/Get
+Started, the section two phone + header/vault/steps, the CTA and fee card staying
+removed, the footer, the 4 reveal targets and their inline stagger, the
+`@layer base` cascade fix, the `float-y`/`pulse-dot`/`bar-fill`/`.site-nav`
+styles and the reduced-motion coverage (**82 assertions**).
 
 ```bash
 npm run verify    # exits non-zero on any failure
@@ -309,8 +330,14 @@ animation), scrolls section two into view, then asserts:
 | No money boxes off-screen | pass |
 | All money + vault + logo images loaded | pass |
 | Get Started visible at every width | pass |
-| Section two reveals all fire (7/7) | pass |
-| Phone is on the left at `lg`+ | pass |
+| Section two reveals all fire (4/4) | pass |
+| Phone headline never orphans (always 2 lines) | pass |
+| Phone on the left at `lg`+, uncropped at 1440×900 | pass |
+| Toasts hidden below `sm` | pass |
+| Right column top-aligned with the phone at `lg`+ | pass |
+| Vault sits above the steps (no overlap) | pass |
+| Nav stays pinned + bar'd on scroll and at page bottom | pass |
+| Footer visible at the page bottom | pass |
 | Page scrolls vertically (hero → section two) | pass |
 | Console / page errors | 0 |
 
@@ -334,12 +361,13 @@ ajo-secure/
 │   └── verify-hero.mjs      # SSR DOM-contract assertions
 └── src/
     ├── main.jsx             # React root
-    ├── App.jsx              # Renders <Hero /> then <SectionTwo />
+    ├── App.jsx              # Renders <Hero /> then <SectionTwo /> then <Footer />
     ├── assets/              # Optimized WebP (generated)
     ├── images/              # Original PNGs — gitignored, 24 MB
     ├── components/
-    │   ├── Hero.jsx         # Section 1 + Nav, FloatingMoney, GridLines
-    │   ├── SectionTwo.jsx   # Section 2 (phone, vault, features, CTA, card)
+    │   ├── Hero.jsx         # Section 1 + pinned Nav, FloatingMoney, GridLines
+    │   ├── SectionTwo.jsx   # Section 2 (phone, header, vault, steps)
+    │   ├── Footer.jsx       # Landing footer (brand, links, legal)
     │   ├── HowItWorks.jsx   # ─┐ retained, not rendered
     │   ├── Sections.jsx     #  │
     │   └── Reveal.jsx       # ─┘
@@ -350,11 +378,15 @@ ajo-secure/
 ```
 
 The nav lives **inside `Hero.jsx`** rather than in its own component: it is part
-of the hero's composition and needs the hero's backdrop.
+of the hero's composition. It is `fixed`, so it outlives the hero's `overflow:
+hidden` and stays visible down the page (an ancestor only clips a fixed
+descendant if it establishes a containing block via `transform`/`filter` — the
+hero has neither).
 
 ## Not currently rendered
 
-`App.jsx` renders `<Hero />` then `<SectionTwo />`. The following files remain
+`App.jsx` renders `<Hero />`, then `<SectionTwo />`, then `<Footer />`. The
+following files remain
 on disk but are **not imported anywhere**:
 
 - `src/components/HowItWorks.jsx`
@@ -370,9 +402,10 @@ them back.
 **Tailwind 4 has no `tailwind.config.js`.** Tokens are CSS custom properties in
 an `@theme` block at the top of `src/styles/index.css`; the framework is wired up
 through `@tailwindcss/vite` in `vite.config.js`. Custom `@keyframes` and the
-`anim-*` / `money-float` / `reveal` / `float-slow` / `phone-float` classes are
-written as plain CSS (no `@layer`) so they are never tree-shaken and never need a
-safelist.
+`anim-*` / `money-float` / `reveal` / `float-y` / `pulse-dot` / `bar-fill` /
+`.site-nav` rules
+are written as plain CSS (no `@layer`) so they are never tree-shaken and never need
+a safelist.
 
 **Globals — and a cascade trap.** `* { margin:0; padding:0; box-sizing:border-box }`
 is kept, and `body { background:#020817; overflow-x:hidden }`. Every spacing
@@ -389,12 +422,15 @@ The `@theme` block and the custom animation classes are intentionally left
 unlayered (they *should* outrank utilities), and `@keyframes` is unaffected by
 layers.
 
-**`prefers-reduced-motion`.** `.money-float`, `.float-slow` and `.phone-float`
-get `animation: none`; `.reveal` is forced to `opacity: 1` so content can never
-stay hidden; and every `anim-*` entrance drops to a 0.01ms duration with 0 delay.
+**`prefers-reduced-motion`.** `.money-float`, `.float-y` and `.pulse-dot` get
+`animation: none`; `.reveal` is forced to `opacity: 1` so content can never stay
+hidden; `.bar-fill` snaps to its final width; every `anim-*` entrance drops to
+a 0.01ms duration with 0 delay; and the nav bar keeps its scrolled state but
+snaps instead of fading.
 
-**No component state.** The hero has none; the section-two reveal is a ref plus
-an `IntersectionObserver` class toggle. The parallax uses refs + `requestAnimationFrame`.
+**No component state.** The hero and the footer have none; the nav's pinned-bar
+toggle and the section-two reveal are each a ref plus a `classList` /
+`IntersectionObserver` toggle. The parallax uses refs + `requestAnimationFrame`.
 
 **Corner radii.** Everything is square-cornered except the section-two phone
 mockup (`rounded-[40px]` frame / `rounded-[30px]` screen / `rounded-full` notch)

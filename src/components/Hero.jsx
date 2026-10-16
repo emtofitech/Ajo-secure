@@ -169,6 +169,19 @@ function GridLines() {
    HERO
    ═══════════════════════════════════════════════════════════ */
 export default function Hero() {
+  const navRef = useRef(null);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const onScroll = () => {
+      nav.classList.toggle("is-scrolled", window.scrollY > 8);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <section className="relative w-full h-screen overflow-hidden bg-[#020817]">
       {/* ── Glow layer (replaces the background video) ── */}
@@ -208,8 +221,11 @@ export default function Hero() {
       <FloatingMoney />
 
       <div className="relative z-10 w-full h-full">
-        {/* ── Nav ── */}
-        <nav className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5 md:px-[35px] py-5 md:py-[27px]">
+        {/* ── Nav — fixed so it stays put on scroll ── */}
+        <nav
+          ref={navRef}
+          className="site-nav fixed top-0 left-0 w-full z-50 flex items-center justify-between px-5 md:px-[35px] py-5 md:py-[27px]"
+        >
           <a href="#" className="flex items-center gap-[10px]">
             <img
               src={logo}
@@ -226,7 +242,7 @@ export default function Hero() {
           </a>
 
           <a
-            href="#get-started"
+            href="#how-it-works"
             className="bg-[#5AB0FF] hover:bg-[#8CC8FF] text-black font-manrope text-[12px] md:text-[13px] leading-[15.6px] uppercase tracking-wide px-[16px] md:px-[20px] py-[10px] md:py-[12px] transition-colors anim-slide-right"
             style={{ animationDelay: "500ms" }}
           >
