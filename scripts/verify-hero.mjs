@@ -25,10 +25,14 @@ const check = (label, cond) => {
 try {
   const heroMod = await server.ssrLoadModule("/src/components/Hero.jsx");
   const twoMod = await server.ssrLoadModule("/src/components/SectionTwo.jsx");
-  const appMod = await server.ssrLoadModule("/src/App.jsx");
+  const fourMod = await server.ssrLoadModule("/src/components/SectionFour.jsx");
+  const appMod = await server.ssrLoadModule("/src/pages/LandingPage.jsx");
 
   const hero = renderToStaticMarkup(React.createElement(heroMod.default));
   const two = renderToStaticMarkup(React.createElement(twoMod.default));
+  const four = renderToStaticMarkup(React.createElement(fourMod.default));
+  /* The landing composition — exactly what the `/` route renders. Rendering it
+     directly keeps this gate free of the router's SSR interop concerns. */
   const app = renderToStaticMarkup(React.createElement(appMod.default));
 
   const count = (html, re) => (html.match(re) || []).length;
@@ -39,9 +43,38 @@ try {
   check("hero is h-screen + overflow-hidden", /class="[^"]*h-screen[^"]*"/.test(hero) && hero.includes("overflow-hidden"));
   check("hero bg-[#020817]", hero.includes("bg-[#020817]"));
   check("hero has exactly one <h1>", count(hero, /<h1\b/g) === 1);
-  check("hero h1 copy", hero.includes("Save Together. Get Paid <span") && hero.includes("Securely."));
+  check(
+    "hero h1 copy on two lines w/ deep-blue accent word",
+    hero.includes(">Save Together.</span>") &&
+      hero.includes('class="block">Get Paid <span class="text-[#2563EB]">Securely.</span>'),
+  );
   check("hero has no <video>", count(hero, /<video\b/g) === 0);
   check("hero has no <svg> (connectors removed)", count(hero, /<svg\b/g) === 0);
+
+  /* ── HERO: sub-copy + actions ── */
+  console.log("\n=== hero: sub-copy + actions ===");
+  check(
+    "sub-copy sits under the H1",
+    hero.includes("Ajo Secure brings the Ajo tradition into a structured, automated platform.") &&
+      hero.indexOf("Save Together.") < hero.indexOf("Ajo Secure brings the Ajo tradition"),
+  );
+  check(
+    "sub-copy is smaller than the H1 (13/14.5px vs 30/42/56px)",
+    /class="[^"]*text-\[13px\][^"]*sm:text-\[14\.5px\]/.test(hero) && hero.includes("text-[30px] sm:text-[42px] md:text-[56px]"),
+  );
+  check("H1 + sub-copy share one positioned block", hero.includes("data-hero-copy"));
+  check(
+    "Start a group + Join a group actions",
+    hero.includes(">Start a group</a>") && hero.includes(">Join a group</a>"),
+  );
+  check(
+    "hero actions are in-page anchors (landing page)",
+    count(hero, /href="#how-it-works"/g) === 2,
+  );
+  check(
+    "nav Get Started enters the dashboard",
+    /<a\s+href="\/app"/.test(hero) && hero.includes(">Get Started</a>"),
+  );
 
   /* ── HERO: removals ── */
   console.log("\n=== hero: removed elements ===");
@@ -62,7 +95,7 @@ try {
   check("wordmark AjoSecure", hero.includes(">AjoSecure</span>"));
   check("Get Started button", hero.includes(">Get Started</a>"));
   check("Get Started square + accent", /bg-\[#5AB0FF\][^"]*px-\[16px\] md:px-\[20px\] py-\[10px\]/.test(hero));
-  check("nav pinned to viewport on scroll", hero.includes("site-nav fixed top-0 left-0 w-full z-50") && hero.includes('href="#how-it-works"'));
+  check("nav pinned to viewport on scroll", hero.includes("site-nav fixed top-0 left-0 w-full z-50") && hero.includes('href="/app"'));
   check("nav has no numbered links", !hero.includes("01.") && !hero.includes("xl:gap-[40px]"));
 
   /* ── HERO: money ── */
@@ -73,8 +106,17 @@ try {
   check("all 8 draggable=false", count(hero, /draggable="false"/g) === 8);
   check("both loop classes", hero.includes("money-float a") && hero.includes("money-float b"));
   check("money layer is pointer-events-none", /class="[^"]*pointer-events-none overflow-hidden"[^>]*aria-hidden="true"/.test(hero));
-  check("4 money visible on mobile (hideSm 5-8 only)", count(hero, /hidden sm:block/g) === 4);
-  check("big money pushed right/centre", hero.includes("sm:top-[19%]") && hero.includes("right-[18%]") && hero.includes("bottom-[18%] left-[40%]"));
+  check("3 money visible on mobile (5 sit behind sm:)", count(hero, /hidden sm:block/g) === 5);
+  check(
+    "big money pushed right/centre",
+    hero.includes("sm:top-[19%]") &&
+      hero.includes("sm:top-[46%] sm:right-[6%]") &&
+      hero.includes("bottom-[6%] right-[3%]"),
+  );
+  check(
+    "money keeps clear of the copy band (mobile bottom band + sm: right edge)",
+    count(hero, /sm:bottom-auto/g) === 2 && count(hero, /sm:left-auto/g) === 1,
+  );
   check("no money above the nav band", !/top-\[(?:[0-9]|1[0-1])%\]/.test(hero));
 
   /* ── HERO: grid ── */
@@ -88,7 +130,7 @@ try {
   check("section id=how-it-works", /<section[^>]*id="how-it-works"/.test(two));
   check("min-h-screen + overflow-hidden + seam", two.includes("min-h-screen") && two.includes("overflow-hidden") && two.includes("border-t border-white/10"));
   check("inner grid 5fr/6fr, max-w-[1280px]", two.includes("max-w-[1280px]") && two.includes("lg:grid-cols-[5fr_6fr]"));
-  check("no top padding after hero (pt-0)", two.includes("px-5 md:px-[35px] pt-0 pb-[80px] md:pb-[120px]"));
+  check("top padding after hero (pt-10)", two.includes("px-5 md:px-[35px] pt-10 pb-[80px] md:pb-[120px]"));
   check("grid-line motif present", count(two, /bg-white\/\[0\.05\]/g) === 6);
   check("phone frame", two.includes("w-[280px] sm:w-[300px] h-[600px]") && two.includes("rounded-[40px]") && two.includes("border-white/25") && two.includes("bg-[#050f24]"));
   check("phone is role=img w/ aria-label", /role="img"[^>]*aria-label="Ajo Secure app preview/.test(two));
@@ -123,11 +165,60 @@ try {
   check("stagger is inline animation-delay, 120ms steps", ["0ms", "120ms", "240ms", "360ms"].every((d) => two.includes(`animation-delay:${d}`)));
   check("reveal unchanged to --reveal-delay removal", count(two, /--reveal-delay/g) === 0);
 
+  /* ── SECTION FOUR (light features band) ── */
+  console.log("\n=== section four ===");
+  check("section id=features", /<section[^>]*id="features"/.test(four));
+  check("section four bg #FDFCF9", four.includes("bg-[#FDFCF9]"));
+  check("headings blue #2563EB", four.includes("2563EB"));
+  check("body copy brown #8C7B6B", four.includes("8C7B6B"));
+  check(
+    "section four heading copy",
+    four.includes("Built so the platform does the job, not a person.") &&
+      four.includes("Every feature exists to remove the single point of human failure from a traditional Ajo."),
+  );
+  check("six white cards", count(four, /reveal bg-white border/g) === 6);
+  check(
+    "six feature titles",
+    [
+      "Immutable ledger",
+      "Automated payout engine",
+      "Ajo Reliability Score",
+      "Live contribution dashboard",
+      "Transparent fee structure",
+      "No admin withdrawal",
+    ].every((t) => four.includes(t)),
+  );
+  check(
+    "six feature bodies",
+    [
+      "Every financial event creates a permanent ledger entry.",
+      "the engine instructs your regulated financial partner directly.",
+      "Not a credit bureau score, but a transparent record.",
+      "visible to every member in real time.",
+      "Fees lock for the cycle — no surprises mid-way.",
+      "no pathway for an admin to withdraw or redirect pooled member funds.",
+    ].every((s) => four.includes(s)),
+  );
+  check("cards stagger via reveal + inline delay", count(four, /class="reveal bg-white border/g) === 6 && count(four, /animation-delay:/g) === 7);
+
   /* ── APP ── */
   console.log("\n=== app ===");
-  check("app renders two sections", count(app, /<section\b/g) === 2);
-  check("app renders hero + section two", app.includes("Save Together") && app.includes('id="how-it-works"'));
+  check("app renders three sections", count(app, /<section\b/g) === 3);
+  check("app renders hero + section two + section four", app.includes("Save Together") && app.includes('id="how-it-works"') && app.includes('id="features"'));
+  check(
+    "landing order hero → how-it-works → features → footer",
+    app.indexOf("Save Together") < app.indexOf('id="how-it-works"') &&
+      app.indexOf('id="how-it-works"') < app.indexOf('id="features"') &&
+      app.indexOf('id="features"') < app.indexOf("<footer"),
+  );
   check("app renders the footer", /<footer\b/.test(app) && app.includes("All rights reserved") && app.includes(">How it works</a>"));
+  check("footer carries contact details", app.includes("emtofitechnologies@gmail.com") && app.includes("tel:+2347046483800") && app.includes("09012130382") && app.includes("08146587069"));
+
+  /* The router shell itself: landing at `/`, dashboard under `/app`. */
+  const appSource = fs.readFileSync(new URL("../src/App.jsx", import.meta.url), "utf8");
+  check("app routes / to the landing page", appSource.includes('path="/"') && appSource.includes("LandingPage"));
+  check("app mounts the dashboard under /app", appSource.includes('path="/app/*"') && appSource.includes("DashboardRoutes"));
+  check("app aliases /dashboard onto the dashboard", appSource.includes('path="/dashboard/*"') && appSource.includes('to="/app"'));
 
   /* ── CSS cascade guard ── */
   console.log("\n=== css cascade ===");

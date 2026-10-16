@@ -24,16 +24,21 @@ const H_LINES = ["32.7%", "71.4%"];
    With the node diagram gone the composition rebalances to the right and
    centre: the large, sharp piles sit right/centre, the small blurred ones
    fill the lower band, and the whole top-left quadrant is kept clear for
-   the H1. Mobile keeps only the four sharpest. */
+   the copy block.
+
+   The copy band is now taller than the H1 alone (H1 + sub-copy + two
+   actions), so each piece carries a mobile position in the bottom band
+   plus an `sm:` desktop position that clears the copy block's right edge.
+   Mobile keeps only the three sharpest. */
 const MONEY = [
-  { src: moneyPile, pos: "top-[64%] right-[6%] sm:top-[19%]", w: "w-[120px] lg:w-[260px]", ar: "aspect-[16/9]", opacity: 1, blur: "", dur: "9s", dx: "14px", dy: "-18px", r0: "-8deg", r1: "6deg", loop: "a", enter: 300, ad: "-2s", depth: 0.7, hideSm: false },
-  { src: moneyBox, pos: "top-[46%] right-[18%]", w: "w-[100px] lg:w-[220px]", ar: "aspect-square", opacity: 1, blur: "", dur: "11s", dx: "-18px", dy: "22px", r0: "10deg", r1: "-4deg", loop: "b", enter: 420, ad: "-5s", depth: 0.8, hideSm: false },
-  { src: moneyDiff, pos: "bottom-[18%] left-[40%]", w: "w-[90px] lg:w-[190px]", ar: "aspect-[16/9]", opacity: 0.95, blur: "", dur: "10s", dx: "20px", dy: "-18px", r0: "-12deg", r1: "8deg", loop: "a", enter: 540, ad: "-7s", depth: 0.75, hideSm: false },
-  { src: moneyPile, pos: "bottom-[14%] left-[6%]", w: "w-[70px] lg:w-[140px]", ar: "aspect-[16/9]", opacity: 0.55, blur: "blur-[2px]", dur: "13s", dx: "12px", dy: "20px", r0: "14deg", r1: "-6deg", loop: "b", enter: 660, ad: "-3s", depth: 0.5, hideSm: false },
-  { src: moneyBox, pos: "bottom-[30%] left-[52%]", w: "w-[60px] lg:w-[110px]", ar: "aspect-square", opacity: 0.45, blur: "blur-[3px]", dur: "14s", dx: "-14px", dy: "16px", r0: "-6deg", r1: "12deg", loop: "a", enter: 780, ad: "-9s", depth: 0.4, hideSm: true },
+  { src: moneyPile, pos: "bottom-[5%] right-[3%] sm:bottom-auto sm:top-[19%] sm:right-[4%]", w: "w-[120px] lg:w-[260px]", ar: "aspect-[16/9]", opacity: 1, blur: "", dur: "9s", dx: "14px", dy: "-18px", r0: "-8deg", r1: "6deg", loop: "a", enter: 300, ad: "-2s", depth: 0.7, hideSm: false },
+  { src: moneyBox, pos: "bottom-[4%] left-[27%] sm:bottom-auto sm:left-auto sm:top-[46%] sm:right-[6%] lg:right-[16%]", w: "w-[100px] lg:w-[220px]", ar: "aspect-square", opacity: 1, blur: "", dur: "11s", dx: "-18px", dy: "22px", r0: "10deg", r1: "-4deg", loop: "b", enter: 420, ad: "-5s", depth: 0.8, hideSm: false },
+  { src: moneyDiff, pos: "bottom-[6%] right-[3%]", w: "w-[90px] lg:w-[190px]", ar: "aspect-[16/9]", opacity: 0.95, blur: "", dur: "10s", dx: "20px", dy: "-18px", r0: "-12deg", r1: "8deg", loop: "a", enter: 540, ad: "-7s", depth: 0.75, hideSm: true },
+  { src: moneyPile, pos: "bottom-[5%] left-[4%] sm:bottom-[4%] sm:left-[6%]", w: "w-[70px] lg:w-[140px]", ar: "aspect-[16/9]", opacity: 0.55, blur: "blur-[2px]", dur: "13s", dx: "12px", dy: "20px", r0: "14deg", r1: "-6deg", loop: "b", enter: 660, ad: "-3s", depth: 0.5, hideSm: false },
+  { src: moneyBox, pos: "bottom-[8%] left-[62%]", w: "w-[60px] lg:w-[110px]", ar: "aspect-square", opacity: 0.45, blur: "blur-[3px]", dur: "14s", dx: "-14px", dy: "16px", r0: "-6deg", r1: "12deg", loop: "a", enter: 780, ad: "-9s", depth: 0.4, hideSm: true },
   { src: moneyDiff, pos: "top-[108px] right-[30%]", w: "w-[50px] lg:w-[90px]", ar: "aspect-[16/9]", opacity: 0.4, blur: "blur-[3px]", dur: "12s", dx: "10px", dy: "18px", r0: "8deg", r1: "-10deg", loop: "b", enter: 900, ad: "-4s", depth: 0.3, hideSm: true },
   { src: moneyPile, pos: "bottom-[34%] right-[3%]", w: "w-[56px] lg:w-[100px]", ar: "aspect-[16/9]", opacity: 0.5, blur: "blur-[2px]", dur: "15s", dx: "-10px", dy: "-20px", r0: "-10deg", r1: "10deg", loop: "a", enter: 1020, ad: "-11s", depth: 0.35, hideSm: true },
-  { src: moneyBox, pos: "bottom-[5%] left-[30%]", w: "w-[64px] lg:w-[120px]", ar: "aspect-square", opacity: 0.5, blur: "blur-[2px]", dur: "12s", dx: "16px", dy: "-14px", r0: "6deg", r1: "-12deg", loop: "b", enter: 1140, ad: "-6s", depth: 0.4, hideSm: true },
+  { src: moneyBox, pos: "bottom-[4%] left-[48%]", w: "w-[64px] lg:w-[120px]", ar: "aspect-square", opacity: 0.5, blur: "blur-[2px]", dur: "12s", dx: "16px", dy: "-14px", r0: "6deg", r1: "-12deg", loop: "b", enter: 1140, ad: "-6s", depth: 0.4, hideSm: true },
 ];
 
 /* ═══════════════════════════════════════════════════════════
@@ -241,8 +246,10 @@ export default function Hero() {
             </span>
           </a>
 
+          {/* Enters the app — the dashboard lives at /app (`/dashboard`
+              is kept as a friendly alias that redirects there). */}
           <a
-            href="#how-it-works"
+            href="/app"
             className="bg-[#5AB0FF] hover:bg-[#8CC8FF] text-black font-manrope text-[12px] md:text-[13px] leading-[15.6px] uppercase tracking-wide px-[16px] md:px-[20px] py-[10px] md:py-[12px] transition-colors anim-slide-right"
             style={{ animationDelay: "500ms" }}
           >
@@ -250,13 +257,53 @@ export default function Hero() {
           </a>
         </nav>
 
-        {/* ── H1 ── */}
-        <h1
-          className="font-graphik text-white font-normal leading-[1em] absolute anim-fade-up text-[32px] sm:text-[48px] md:text-[68px] top-[140px] sm:top-[160px] md:top-[178px] left-5 md:left-[35px] max-w-[300px] sm:max-w-[420px] md:max-w-[554px]"
-          style={{ animationDelay: "400ms" }}
+        {/* ── Hero copy: H1 + sub-copy + actions ──
+           One positioned block (not three) so the sub-copy and the
+           buttons flow under the H1 at every wrap. */}
+        <div
+          data-hero-copy
+          className="absolute left-5 md:left-[35px] top-[140px] sm:top-[160px] md:top-[178px] max-w-[300px] sm:max-w-[420px] md:max-w-[554px]"
         >
-          Save Together. Get Paid <span className="text-[#5AB0FF]">Securely.</span>
-        </h1>
+          <h1
+            className="font-graphik text-white font-normal leading-[1em] anim-fade-up text-[30px] sm:text-[42px] md:text-[56px]"
+            style={{ animationDelay: "400ms" }}
+          >
+            {/* Two lines by construction — "Save Together." /
+                "Get Paid Securely." — so the buttons below never get
+                pushed off the fold by a third line. */}
+            <span className="block">Save Together.</span>
+            <span className="block">
+              Get Paid <span className="text-[#2563EB]">Securely.</span>
+            </span>
+          </h1>
+
+          <p
+            className="font-manrope text-white/60 text-[13px] sm:text-[14.5px] leading-[1.7] max-w-[300px] sm:max-w-[400px] md:max-w-[460px] mt-5 sm:mt-6 anim-fade-up"
+            style={{ animationDelay: "480ms" }}
+          >
+            Ajo Secure brings the Ajo tradition into a structured, automated platform. Verified
+            members contribute, the rules enforce themselves, and payouts happen automatically — no
+            admin ever touches the pooled funds.
+          </p>
+
+          <div
+            className="mt-6 sm:mt-7 flex flex-wrap gap-3 anim-fade-up"
+            style={{ animationDelay: "560ms" }}
+          >
+            <a
+              href="#how-it-works"
+              className="inline-flex items-center justify-center bg-[#5AB0FF] hover:bg-[#8CC8FF] text-black font-manrope text-[12px] md:text-[13px] leading-[15.6px] uppercase tracking-wide px-[20px] py-[12px] transition-colors"
+            >
+              Start a group
+            </a>
+            <a
+              href="#how-it-works"
+              className="inline-flex items-center justify-center border border-white/25 hover:border-white/60 text-white font-manrope text-[12px] md:text-[13px] leading-[15.6px] uppercase tracking-wide px-[20px] py-[12px] transition-colors"
+            >
+              Join a group
+            </a>
+          </div>
+        </div>
 
         {/* ── Grid + plus marks ── */}
         <div className="absolute inset-0 pointer-events-none">

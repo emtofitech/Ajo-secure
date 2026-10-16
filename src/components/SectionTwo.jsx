@@ -134,7 +134,7 @@ export default function SectionTwo() {
       </div>
 
       {/* pt-0: no padding after the hero (border-t is the seam) */}
-      <div className="relative z-10 max-w-[1280px] mx-auto px-5 md:px-[35px] pt-0 pb-[80px] md:pb-[120px] grid grid-cols-1 lg:grid-cols-[5fr_6fr] gap-[56px] lg:gap-[72px] items-start">
+      <div className="relative z-10 max-w-[1280px] mx-auto px-5 md:px-[35px] pt-10 pb-[80px] md:pb-[120px] grid grid-cols-1 lg:grid-cols-[5fr_6fr] gap-[56px] lg:gap-[72px] items-start">
         {/* ── LEFT: phone product demo ── */}
         <div className="reveal relative mx-auto w-fit" style={{ animationDelay: D(0) }}>
           {/* soft blue glow behind the phone */}

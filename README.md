@@ -1,12 +1,26 @@
-# Ajo Secure — landing
+# Ajo Secure
 
-A two-section landing page for the Ajo Secure platform: community rotating
-savings (Ajo/Esusu) where the organizer coordinates the group but never holds or
-redirects the pooled money.
+Community rotating savings (Ajo/Esusu) where the organizer coordinates the group
+but never holds or redirects the pooled money — plus **Ajo-to-Goods**, a separate,
+optional way to save toward goods from an approved vendor catalog.
 
 Built with **React 18 + Vite 6 + Tailwind CSS 4**.
 
-> The page is **two `<section>`s**: the full-viewport hero (`h-screen`,
+One app, two surfaces:
+
+| Route      | What it is                                                        |
+| ---------- | ----------------------------------------------------------------- |
+| `/`        | The public landing page (hero, "how it works", features, footer).  |
+| `/app/*`   | The member dashboard (cycles, ledger, notifications, profile).     |
+| `/dashboard` | Friendly alias for `/app` — redirects there.                    |
+| `/app/goods` | **Ajo-to-Goods**, behind the `FEATURES.ajoToGoods` flag.        |
+
+Routing is `react-router-dom`. The landing page is documented from
+[Design tokens](#design-tokens) down to [Deploying](#deploying); the dashboard and
+Ajo-to-Goods are documented in [The dashboard](#the-dashboard) and
+[Ajo-to-Goods](#ajo-to-goods).
+
+> The landing page is **two `<section>`s**: the full-viewport hero (`h-screen`,
 > `overflow-hidden`, no scroll of its own) and a `min-h-screen` "how it works"
 > section below it. The page scrolls vertically between them; it never scrolls
 > horizontally. `body` keeps `overflow-x: hidden` and does **not** set
@@ -61,7 +75,7 @@ and up**.
 | ---------- | ---------------------------------------------- |
 | Hero nav   | `px-5 md:px-[35px]` (plus `py-5 md:py-[27px]`) |
 | H1         | `left-5 md:left-[35px]`                        |
-| Section 2  | `px-5 md:px-[35px]` (inner `max-w-[1280px]`, `pt-0`) |
+| Section 2  | `px-5 md:px-[35px]` (inner `max-w-[1280px]`, `pt-10`) |
 
 The spec calls for these Tailwind arbitrary values inline rather than a shared
 `.gutter` class, so the value is repeated. **If you change one, change them all**
@@ -93,8 +107,20 @@ LEDGER` badge, chamfered info card, `VIEW_FEE_BREAKDOWN` link) — has been remo
 from the hero, and the CTA + fee-card copy is now gone from the page entirely. The
 three steps live in section two.
 
-The hero keeps: the navbar, the `<h1>` `Save Together. Get Paid Securely.`, the
-blue glow background, the grid lines and plus marks, and the floating money.
+The hero keeps: the navbar, the `<h1>`, the sub-copy and the pair of action
+buttons, the blue glow background, the grid lines and plus marks, and the
+floating money.
+
+The copy is one absolutely-positioned block (`[data-hero-copy]`) so the sub-copy
+and the buttons always flow under the headline: the `<h1>` renders on **two
+lines by construction** (`Save Together.` / `Get Paid Securely.`) at
+`text-[30px] sm:text-[42px] md:text-[56px]`, with only the word **Securely.**
+picked out in the deep app blue (`#2563EB` — the same blue as the section-four
+headings). Beneath it sits the sub-copy (`text-[13px] sm:text-[14.5px]`, muted
+white) and a `flex flex-wrap gap-3` row of two square buttons — **Start a group**
+(accent-filled) and **Join a group** (outline) — both in-page anchors to
+`#how-it-works`. Holding the headline to two lines is what keeps those buttons
+above the fold on short viewports.
 
 ### Navbar
 
@@ -112,8 +138,9 @@ border. Over the hero it is transparent.
   md:text-[21px] leading-[21px] whitespace-nowrap`). Both use `anim-fade-up`
   at 200ms.
 - **Right** — a **Get Started** button (`bg-[#5AB0FF] hover:bg-[#8CC8FF]
-  text-black`, square corners, `anim-slide-right` at 500ms) linking to
-  `#how-it-works`. Shown at **every** breakpoint.
+  text-black`, square corners, `anim-slide-right` at 500ms) linking to the
+  dashboard at `/app` (`/dashboard` is kept as an alias). Shown at **every**
+  breakpoint.
 
 There are **no numbered nav links** (`01. HOW_IT_WORKS` … `04. AJO_STAR`), **no
 wallet strip** (`GROUP:`, `[ VERIFIED ]`, `STATUS:`, `AJO_STAR ★ 4.8`), **no
@@ -188,10 +215,11 @@ Other notes:
 
 `<section id="how-it-works" class="relative w-full min-h-screen bg-[#020817]
 overflow-hidden border-t border-white/10">` — the `border-t` is the seam with the
-hero and the section carries **no top padding**, so it meets the hero exactly.
-Inside: a glow layer (radial blue behind the phone at 25%/50% and behind the
-vault at 85%/15%) and the same `bg-white/[0.05]` grid-line motif as the hero.
-Inner wrapper: `max-w-[1280px] mx-auto px-5 md:px-[35px] pt-0 pb-[80px]
+hero, and the section carries `pt-10` (40px) of top padding so the pinned navbar
+does not crowd the content. Inside: a glow layer (radial blue behind the phone at
+25%/50% and behind the vault at 85%/15%) and the same `bg-white/[0.05]`
+grid-line motif as the hero.
+Inner wrapper: `max-w-[1280px] mx-auto px-5 md:px-[35px] pt-10 pb-[80px]
 md:pb-[120px] grid grid-cols-1 lg:grid-cols-[5fr_6fr] gap-[56px] lg:gap-[72px]
 items-start` — `items-start` keeps the right column top-aligned with the phone.
 
@@ -283,7 +311,8 @@ npm run dev      # http://localhost:5173
 | `npm run build`           | Production build into `dist/`                       |
 | `npm run preview`         | Serve the production build locally                  |
 | `npm run lint`            | ESLint (includes the React Hooks rules)             |
-| `npm run verify`          | SSR-render both sections and assert the DOM contract |
+| `npm run verify`          | SSR-render the landing page and assert the DOM contract |
+| `npm run verify:goods`    | Assert the Ajo-to-Goods ledger + state contract (69 checks) |
 | `npm run optimize:images` | PNG → WebP (resize, white cut-out, logo crop)       |
 
 Requires Node 18+ (developed on Node 22).
@@ -291,13 +320,21 @@ Requires Node 18+ (developed on Node 22).
 ### `npm run verify`
 
 `scripts/verify-hero.mjs` renders `Hero.jsx`, `SectionTwo.jsx`, `Footer.jsx` and
-`App.jsx` through Vite's SSR pipeline and asserts the DOM contract — element
-counts, the 8 money instances and their CSS variables, the 8 plus marks, the
-removed hero elements staying removed, the pinned nav's logo/wordmark/Get
-Started, the section two phone + header/vault/steps, the CTA and fee card staying
-removed, the footer, the 4 reveal targets and their inline stagger, the
-`@layer base` cascade fix, the `float-y`/`pulse-dot`/`bar-fill`/`.site-nav`
-styles and the reduced-motion coverage (**82 assertions**).
+the landing composition (`LandingPage.jsx`) through Vite's SSR pipeline and
+asserts the DOM contract — element counts, the 8 money instances and their CSS
+variables, the 8 plus marks, the removed hero elements staying removed, the
+pinned nav's logo/wordmark/Get Started (now linking to `/app`), the two-line
+hero headline with its deep-blue accent word plus sub-copy and the two
+in-page action buttons, the section two phone + header/vault/steps,
+the light section-four features band (six cards, copy and palette),
+the CTA and fee card staying removed, the footer, the 4 reveal targets and their
+inline stagger, the `@layer base` cascade fix, the `float-y`/`pulse-dot`/`bar-fill`/
+`.site-nav` styles and the reduced-motion coverage (**103 assertions**).
+
+It renders `LandingPage` directly rather than the router shell `App.jsx`, because
+`react-router-dom` is CommonJS and does not survive Vite's SSR interop. The
+routing itself is asserted at the source level instead: `App.jsx` must map `/` to
+the landing page, mount the dashboard at `/app/*` and alias `/dashboard` onto it.
 
 ```bash
 npm run verify    # exits non-zero on any failure
@@ -305,6 +342,27 @@ npm run verify    # exits non-zero on any failure
 
 It catches structure and regression bugs, **not** visual ones — text
 overlapping artwork and image cropping still need an eye on the page.
+
+### `npm run verify:goods`
+
+`scripts/verify-goods.mjs` exercises the Ajo-to-Goods **service layer** directly
+(no browser) and asserts **69 contract checks**:
+
+- the state machine — only whitelisted transitions, and `CANCELLED` /
+  `MEMBER_CONFIRMED` are not parkable;
+- balanced double-entry ledger legs (`isBalanced`) with integer kobo, and the
+  ledger staying append-only;
+- catalog-only vendors — a free-text vendor or item is rejected;
+- the full journey (create → save → `TARGET_REACHED` → confirm → vendor notified
+  → accepted → received → `FULFILLED`) writing a notification and an audit entry
+  at each transition;
+- cancel issuing a compensating `GOODS_REFUND` while the original entries are
+  left untouched;
+- a notification, audit entry and ledger entry for every transition.
+
+```bash
+npm run verify:goods    # exits non-zero on any failure
+```
 
 ### Headless layout checks
 
@@ -348,6 +406,125 @@ at 1024px — hence the fixed `top-[108px]`).
 The harness is a scratch tool, not committed — the browser path is machine
 specific. `npm run verify` is the committed, portable regression gate.
 
+## The dashboard
+
+Mounted at `/app/*` by `src/App.jsx`; the tree lives in
+`src/dashboard/DashboardRoutes.jsx` under a single layout route
+(`layout/DashboardLayout.jsx`).
+
+```
+/dashboard           → redirects to /app (friendly alias)
+/app                 DashboardHome   — six cards, cycles, recent ledger
+/app/cycles          CyclesPage
+/app/ledger          LedgerPage      — All / Ajo / Goods filter
+/app/notifications   NotificationsPage
+/app/profile         ProfilePage
+/app/goods           GoodsHome       — flag-gated
+/app/goods/new       GoodsHome       — opens the create modal
+/app/goods/:id       GoodsTargetDetail
+```
+
+`DashboardLayout` renders a fixed 248px sidebar at `lg`+ and a slide-over drawer
+below it, plus a sticky topbar with the page title (derived from the path), a
+notification bell with an unread count, and the member's initials. A route change
+scrolls to the top and rewrites `document.title`.
+
+The sidebar is built from `src/dashboard/navItems.js`, which is the single source
+of truth for the nav, the drawer and the active state (`NavLink` gives
+`aria-current="page"` for free). `DashboardHome` shows six cards in a
+`1 / 2 / 3`-column grid: active cycles, total contributed, next payout, ledger
+entries, account status and Ajo-to-Goods.
+
+### UI primitives and data hooks
+
+`src/dashboard/ui/index.jsx` holds the shared, dependency-free primitives —
+`Button`, `Card`/`CardHeader`, `Chip`/`BetaChip`/`VerifiedBadge`, `StatCard`,
+`ProgressBar`, `Banner`/`ErrorBanner`, `Skeleton`/`CardSkeleton`, `EmptyState`,
+`Field`/`Input`/`Select`/`TextArea`, `Modal` and `Money`. Square corners
+throughout except chips and avatars.
+
+`src/dashboard/hooks/useData.js` wraps the async API in tiny hooks
+(`useUser`, `useCycles`, `useLedger`, `useNotifications`, `useGoodsTargets`, …).
+Each subscribes to the store's change bus via `useStoreVersion`, so any write
+re-renders every dependent view without a state library.
+
+## Ajo-to-Goods
+
+An **optional, secondary** way to save toward physical goods. It is deliberately
+kept apart from Ajo cycle money:
+
+- **Separate pool.** Goods savings never enter a cycle, and cycle money never pays
+  a vendor. The goods ledger is its own set of entries.
+- **No organizer.** There is no organizer-facing goods surface at all — organizers
+  have no role here.
+- **Catalog-only vendors.** Vendors come from an approved, verified catalog. No UI
+  or API path accepts a free-text vendor or a member-typed payout account.
+- **Member-only confirmation.** Only the member can confirm an order.
+
+### The flag
+
+```js
+// src/config/features.js
+export const FEATURES = { ajoToGoods: true };
+```
+
+Flip it to `false` and the sidebar item, the `/app/goods/*` routes and the
+dashboard card all disappear — `navItems.js` drops the item, `DashboardRoutes.jsx`
+swaps the routes for a redirect to `/app`, and `DashboardHome` omits the card.
+There is no other code path that can show the feature.
+
+### Vendor catalog (seeded)
+
+Four verified vendors, each with 2–4 catalog items and integer-kobo prices:
+
+| Vendor                      | City   | Example items                                 |
+| --------------------------- | ------ | --------------------------------------------- |
+| Mama Nkechi Foodstuff Hub   | Lagos  | 50kg rice, 25L groundnut oil, yam tubers      |
+| Lagos Kitchen Depot         | Lagos  | gas cooker, blender, pressure cooker          |
+| Homefront Appliances        | Abuja  | rechargeable lamp, standing fan, water dispenser |
+| Naija Home Essentials       | Ibadan | storage drums, gas cylinder, cookware set     |
+
+### Workflow
+
+```
+SAVING → TARGET_REACHED → MEMBER_CONFIRMED → VENDOR_NOTIFIED → VENDOR_ACCEPTED → FULFILLED
+                                                                              ↘ CANCELLED → REFUNDED
+```
+
+Transitions are whitelisted in `GOODS_TRANSITIONS`; the service rejects anything
+else with a clear error. `CANCELLED` and `MEMBER_CONFIRMED` are transient — the
+API walks through `MEMBER_CONFIRMED → VENDOR_NOTIFIED` in one call, and a member
+cannot park a target in either. `CANCELLABLE_STATES` is
+`{ SAVING, PAUSED, TARGET_REACHED }`.
+
+The vendor's acceptance is simulated: after the member confirms, the browser
+schedules `acceptVendorOffer(id)` a couple of seconds later. It is exported so the
+Node tests can drive it deterministically.
+
+### Ledger types
+
+Three goods entry types extend the ledger, all appended through the balanced
+`writeTx` helper (`isBalanced`, integer kobo, append-only — corrections are new
+entries, never edits):
+
+| Type           | When                                  | Tag     |
+| -------------- | ------------------------------------- | ------- |
+| `GOODS_SAVING` | a contribution to a target            | `Goods` |
+| `GOODS_PAYOUT` | the vendor is paid on fulfilment      | `Goods` |
+| `GOODS_REFUND` | a cancelled target is compensated     | `Goods` |
+
+Goods entries show in the main Ledger with a **Goods** tag; the filter is
+All / Ajo / Goods.
+
+### Copy rules
+
+The feature is always named with a **BETA** chip — in the sidebar, on the goods
+home, and on the dashboard card. Compliance wording stays neutral: cancellation
+says *"Saved funds return to your payout account after review"* and never uses
+"withdraw", "cash out" or "instant". The delivery note is free text capped at 200
+characters; the payout destination is always read-only copy — *"Paid to {vendor}'s
+verified account"*.
+
 ## Project structure
 
 ```
@@ -358,16 +535,34 @@ ajo-secure/
 ├── package.json
 ├── scripts/
 │   ├── optimize-images.mjs  # PNG → WebP (resize + cut-out + crop)
-│   └── verify-hero.mjs      # SSR DOM-contract assertions
+│   ├── verify-hero.mjs      # Landing SSR DOM-contract assertions (103)
+│   └── verify-goods.mjs     # Ajo-to-Goods service-contract assertions (69)
 └── src/
-    ├── main.jsx             # React root
-    ├── App.jsx              # Renders <Hero /> then <SectionTwo /> then <Footer />
+    ├── main.jsx             # React root + <BrowserRouter>
+    ├── App.jsx              # Router: "/" landing, "/app/*" dashboard, /dashboard alias
+    ├── config/
+    │   └── features.js      # FEATURES.ajoToGoods flag
+    ├── services/
+    │   ├── mockDb.js        # Seeded store, ledger primitives, state tables
+    │   └── api.js           # All reads/writes (JSDoc future endpoints)
+    ├── pages/
+    │   └── LandingPage.jsx  # <Hero/> + <SectionTwo/> + <SectionFour/> + <Footer/>
+    ├── dashboard/
+    │   ├── DashboardRoutes.jsx
+    │   ├── navItems.js      # Sidebar source of truth (flag-aware)
+    │   ├── layout/          # Sidebar.jsx, DashboardLayout.jsx
+    │   ├── ui/index.jsx     # Shared primitives
+    │   ├── hooks/useData.js # Store subscriptions
+    │   ├── components/goods/# CreateTargetModal, WorkflowStepper, goodsMeta
+    │   └── pages/           # DashboardHome, Cycles, Ledger, Notifications,
+    │                        # Profile, goods/GoodsHome, goods/GoodsTargetDetail
     ├── assets/              # Optimized WebP (generated)
     ├── images/              # Original PNGs — gitignored, 24 MB
     ├── components/
     │   ├── Hero.jsx         # Section 1 + pinned Nav, FloatingMoney, GridLines
     │   ├── SectionTwo.jsx   # Section 2 (phone, header, vault, steps)
-    │   ├── Footer.jsx       # Landing footer (brand, links, legal)
+    │   ├── SectionFour.jsx  # Section 4 (light features band, six cards)
+    │   ├── Footer.jsx       # Landing footer (brand, links, contact, legal)
     │   ├── HowItWorks.jsx   # ─┐ retained, not rendered
     │   ├── Sections.jsx     #  │
     │   └── Reveal.jsx       # ─┘
@@ -385,9 +580,10 @@ hero has neither).
 
 ## Not currently rendered
 
-`App.jsx` renders `<Hero />`, then `<SectionTwo />`, then `<Footer />`. The
-following files remain
-on disk but are **not imported anywhere**:
+`App.jsx` is a router. `/` renders `LandingPage` (`<Hero />`, `<SectionTwo />`,
+`<SectionFour />`, `<Footer />`), `/dashboard` redirects to `/app`, and `/app/*`
+renders the dashboard. The following files remain on
+disk but are **not imported anywhere**:
 
 - `src/components/HowItWorks.jsx`
 - `src/components/Sections.jsx` (StatBand, Features, TrustSafety, Fees, CTA, Footer)
@@ -428,13 +624,19 @@ hidden; `.bar-fill` snaps to its final width; every `anim-*` entrance drops to
 a 0.01ms duration with 0 delay; and the nav bar keeps its scrolled state but
 snaps instead of fading.
 
-**No component state.** The hero and the footer have none; the nav's pinned-bar
-toggle and the section-two reveal are each a ref plus a `classList` /
-`IntersectionObserver` toggle. The parallax uses refs + `requestAnimationFrame`.
+**No component state on the landing page.** The hero and the footer have none; the
+nav's pinned-bar toggle and the section-two reveal are each a ref plus a
+`classList` / `IntersectionObserver` toggle. The parallax uses refs +
+`requestAnimationFrame`. (The dashboard, by contrast, is a normal React app with
+hooks and local state.)
 
-**Corner radii.** Everything is square-cornered except the section-two phone
-mockup (`rounded-[40px]` frame / `rounded-[30px]` screen / `rounded-full` notch)
-and the pill glow behind it.
+**Corner radii.** The landing page is square-cornered except the section-two
+phone mockup (`rounded-[40px]` frame / `rounded-[30px]` screen / `rounded-full`
+notch) and the pill glow behind it. The dashboard keeps the same square
+language: action buttons take a `rounded-[2px]` token (filter chips / tabs stay
+`rounded-full`), and buttons with a surface are **elevated** — a light top edge
+plus a drop shadow, or a blue glow on the accent variant, because a plain black
+shadow is invisible on `#020817`.
 
 ## Deploying
 

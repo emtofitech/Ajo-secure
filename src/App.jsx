@@ -1,15 +1,17 @@
 import "./styles/index.css";
-
-import Hero from "./components/Hero.jsx";
-import SectionTwo from "./components/SectionTwo.jsx";
-import Footer from "./components/Footer.jsx";
+import { Navigate, Route, Routes } from "react-router-dom";
+import LandingPage from "./pages/LandingPage.jsx";
+import DashboardRoutes from "./dashboard/DashboardRoutes.jsx";
 
 export default function App() {
   return (
-    <>
-      <Hero />
-      <SectionTwo />
-      <Footer />
-    </>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/app/*" element={<DashboardRoutes />} />
+      {/* Friendly alias: the dashboard is also reachable at /dashboard. */}
+      <Route path="/dashboard/*" element={<Navigate to="/app" replace />} />
+      {/* Unknown paths fall back to the landing page. */}
+      <Route path="*" element={<LandingPage />} />
+    </Routes>
   );
 }
