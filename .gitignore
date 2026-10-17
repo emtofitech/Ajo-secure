@@ -25,3 +25,7 @@ pnpm-debug.log*
 # Build output
 build
 coverage
+
+# Source artwork — too large for git (22 MB). WebP lives in src/assets.
+# Regenerate with: npm run optimize:images
+src/images/
